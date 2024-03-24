@@ -9,6 +9,7 @@ import { IoMdHeartEmpty } from 'react-icons/io'
 import { BsCart } from 'react-icons/bs'
 import { BiMenuAltRight } from 'react-icons/bi'
 import { VscChromeClose } from 'react-icons/vsc'
+import { fetchDataFromApi } from "@/utils/api";
 
 const Header = () => {
 
@@ -16,6 +17,17 @@ const Header = () => {
     const [showCatMenu, setShowCatMenu] = useState(false)
     const [show, setShow] = useState("translate-y-0")
     const [lastScrollY, setLastScrollY] = useState(0)
+
+    const [categories, setCategories] = useState(null)
+
+    useEffect(() => {
+        fetchCategory()
+    }, [])
+
+    const fetchCategory = async () => {
+        const { data } = await fetchDataFromApi('api/categories?populate=*')
+        setCategories(data)
+    }
 
     const controlNavbar = () => {
         if (window.scrollY > 200) {
@@ -46,13 +58,16 @@ const Header = () => {
             <Menu
                 showCatMenu={showCatMenu}
                 setShowCatMenu={setShowCatMenu}
+                categories={categories}
             />
 
-            {mobileMenu && (<MenuMobile
-                showCatMenu={showCatMenu}
-                setShowCatMenu={setShowCatMenu}
-                setMobileMenu={setMobileMenu}
-            />)}
+            {mobileMenu && (
+                <MenuMobile
+                    showCatMenu={showCatMenu}
+                    setShowCatMenu={setShowCatMenu}
+                    setMobileMenu={setMobileMenu}
+                    categories={categories}
+                />)}
 
             <div className="flex items-center gap-2 text-black">
                 {/* Icon Start */}
