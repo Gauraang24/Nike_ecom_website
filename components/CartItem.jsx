@@ -1,11 +1,24 @@
+import { updateCart, removeFromCart } from '@/store/cartSlice'
 import Image from 'next/image'
 import React from 'react'
 import { RiDeleteBin6Line } from "react-icons/ri"
+import { useDispatch } from 'react-redux'
 
 
 const CartItem = ({ data }) => {
 
     const p = data.attributes
+    const dispatch = useDispatch()
+
+    const updateCartItem = (e, key) => {
+        let payload = {
+            key,
+            val: key === "quantity" ? parseInt(e.target.value) : e.target.value,
+            id: data.id
+        }
+        dispatch(updateCart(payload))
+    }
+
     return (
         <div className='flex py-5 gap-3 md:gap-5 border-b'>
 
@@ -42,24 +55,44 @@ const CartItem = ({ data }) => {
                     <div className='flex items-center gap-2 md:gap-10 text-black/[0.5] text-sm md:text-md'>
                         <div className='flex items-center gap-1'>
                             <div className='font-semibold'>Size:</div>
-                            <select className='hover:text-black'>
-                                <option value="1">UK 6</option>
-                                <option value="2">UK 6.5</option>
-                                <option value="3">UK 7</option>
-                                <option value="4">UK 7.5</option>
-                                <option value="5">UK 8</option>
-                                <option value="6">UK 8.5</option>
-                                <option value="7">UK 9</option>
-                                <option value="8">UK 9.5</option>
-                                <option value="8">UK 10</option>
-                                <option value="8">UK 10.5</option>
-                                <option value="8">UK 11</option>
+                            <select className='hover:text-black'
+                                onChange={(e) => {
+                                    updateCartItem(e, "selectedSize")
+                                }}
+                            >
+                                {p?.size?.data.map((item, i) => {
+                                    return (
+                                        <option
+                                            key={i}
+                                            value={item?.size}
+                                            disabled={!item.enabled ? true : false}
+                                            selected={data.selectedSize === item.size}
+                                        >
+                                            {item.size}
+                                        </option>
+                                    )
+
+                                })}
                             </select>
                         </div>
                         <div className='flex items-center gap-1'>
                             <div className='font-semibold'>Quantity:</div>
-                            <select className='hover:text-black'>
-                                <option value="1">1</option>
+                            <select className='hover:text-black'
+                                onChange={(e) => {
+                                    updateCartItem(e, "quantity")
+                                }}>
+                                {Array.from({ length: 10 }, (_, i) => i + 1).map((q, i) => {
+                                    return (
+                                        <option
+                                            key={i}
+                                            value={q}
+                                            selected={data.quantity === q}
+                                        >
+                                            {q}
+                                        </option>
+                                    )
+                                })}
+                                {/* <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
@@ -68,12 +101,14 @@ const CartItem = ({ data }) => {
                                 <option value="7">7</option>
                                 <option value="8">8</option>
                                 <option value="8">9</option>
-                                <option value="8">10</option>
+                                <option value="8">10</option> */}
                             </select>
                         </div>
 
                     </div>
-                    <RiDeleteBin6Line className="cursor-pointer text-black/[0.5] hover:text-black text-[16px] md:text-[20px]" />
+                    <RiDeleteBin6Line onClick={() => {
+                        dispatch(removeFromCart({ id: data.id }))
+                    }} className="cursor-pointer text-black/[0.5] hover:text-black text-[16px] md:text-[20px]" />
                 </div>
             </div>
         </div>

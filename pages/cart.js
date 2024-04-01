@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Wrapper from '@/components/Wrapper'
@@ -8,6 +8,10 @@ import { useSelector } from 'react-redux'
 const Cart = () => {
 
     const { cartItems } = useSelector((state) => state.cart)
+
+    const subTotal = useMemo(() => {
+        return cartItems.reduce((total, val) => total + val.attributes.price, 0)
+    }, [cartItems])
     return (
         <div className='w-full md:py-20'>
             <Wrapper>
@@ -40,7 +44,9 @@ const Cart = () => {
                                 <div className='p-5 my-5 bg-black/[0.05] rounded-xl'>
                                     <div className='flex justify-between'>
                                         <div className='uppercase text-md md:text-lg font-medium text-black'>SubTotal</div>
-                                        <div className='text-md md:text-lg font-medium text-black'>$ 1024.00</div>
+                                        <div className='text-md md:text-lg font-medium text-black'>
+                                            &#8377;{subTotal}
+                                        </div>
                                     </div>
 
                                     <div className='text-sm md:text-md py-5 border-t mt-5'> The subtotal reflects the total price of your oder, including dutites and taxes, beofre any applicable discounts. It does not include delivery cost and international transaction fees.</div>
